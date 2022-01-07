@@ -1,15 +1,18 @@
 module.exports = function(config) {
     const Ajv = require("ajv")
-    const fs = require("fs");
+
     const axios = require("axios");
     const addFormats = require("ajv-formats");
+    const Loader = require("./refLoader.js");
+    const refLoader = new Loader(config);
+
     const ajv = new Ajv({allErrors: true});
     addFormats(ajv);
     this.offers = [];
     let parent = this;
 
-    this.addOffer = function(offer) {
-      if(!parent.validate(require("./didax.offer.schema.json"),offer)) {
+    this.addOffer = async function(offer) {
+      if(!await parent.validate(await refLoader.load("./didax.offer.schema.json"),offer)) {
         throw new Error('Offer Schema Validation failed');
       }
       if(offer.ratio == 0) {
@@ -20,43 +23,56 @@ module.exports = function(config) {
       }
 
       // Implement BID and ASK Schema into offer Object
-      if(!fs.existsSync(offer.bid.definition.schema)) {
-        throw new Error('Bid Schema not found');
-      } else {
-        offer.bid.definition.schema = JSON.parse(fs.readFileSync(offer.bid.definition.schema));
-      }
-      if(!fs.existsSync(offer.bid.definition.asset)) {
-        throw new Error('Bit Asset not found');
-      } else {
-        offer.bid.definition.asset = JSON.parse(fs.readFileSync(offer.bid.definition.asset));
-      }
-      if(!fs.existsSync(offer.ask.definition.schema)) {
-        throw new Error('Ask Schema not found');
-      } else {
-        offer.ask.definition.schema = JSON.parse(fs.readFileSync(offer.ask.definition.schema));
-      }
+      offer.bid.definition.schema = await refLoader.load(offer.bid.definition.schema);
+      offer.bid.definition.asset = await refLoader.load(offer.bid.definition.asset);
+      offer.ask.definition.schema = await refLoader.load(offer.ask.definition.schema);
 
       if(typeof offer.ask.definition.requirement !== 'undefined') {
-        if(!fs.existsSync(offer.ask.definition.requirement)) {
-          throw new Error('Ask Requirement not found');
-        } else {
-          offer.ask.definition.requirement = JSON.parse(fs.readFileSync(offer.ask.definition.requirement));
-        }
+        offer.ask.definition.requirement = await refLoader.load(offer.ask.definition.requirement);
       }
 
-      if(!parent.validate(offer.bid.definition.schema,offer.bid.definition.asset)) {
+      if(!await parent.validate(offer.bid.definition.schema,offer.bid.definition.asset)) {
         throw new Error('Bid Asset not Valid for Bid Schema.');
       }
       this.offers.push(offer);
+      return this.offers.length;
     }
 
-    this.getMatches = function() {
+    this.getMatches = async function() {
       let matches = [];
+      for(let i=0;i<this.offers.length;i++) {
+        for(let j=0;j<this.offers.length;j++) {
+          if(this.offers[i].bid.definition.schema["$id"] == this.offers[j].ask.definition.schema["$id"]) {
+            // Ask and Bid Schema matches
+            if(
+                 ((typeof this.offers[i].ratio == 'undefined') || (typeof this.offers[j].ratio == 'undefined')) ||
+                 (this.offers[i].ratio == (1/this.offers[j].ratio))
+               ) {
+                // price fits
+                let requirementMatch = true;
+                if(typeof this.offers[i].ask.definition.requirement !== 'undefined') {
+                  requirementMatch = await parent.validate(this.offers[i].ask.definition.requirement,this.offers[j].bid.definition.asset);
+                }
+                if((requirementMatch) && (typeof this.offers[j].ask.definition.requirement !== 'undefined')) {
+                  requirementMatch = await parent.validate(this.offers[j].ask.definition.requirement,this.offers[i].bid.definition.asset);
+                }
+                if(requirementMatch) {
+                  matches.push({pair:[
+                    this.offers[i],
+                    this.offers[j]
+                  ]});
+                }
+            }
+          }
+        }
+      }
       return matches;
     }
-    this.validate = function(schema,data) {
-      const validate = ajv.compile(schema)
-      return validate(data)
+
+    this.validate = async function(schema,data) {
+      const v =  await ajv.getSchema(schema["$id"])
+              ||  await ajv.compile(schema)
+      return v(data);
     }
 
     return this;

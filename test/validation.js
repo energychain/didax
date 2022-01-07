@@ -7,7 +7,7 @@ describe('Validation', function() {
         const schema = require("./schema.apple.json");
         let apple = {cultivar:"Tamplin"};
 
-        assert.equal(await lib.validate(schema,apple), true);
+        await assert.equal(await lib.validate(schema,apple), true);
         apple.cultivar = 'Nothing';
         assert.equal(await lib.validate(schema,apple), false);
         apple.cultivar = "Tamplin ";
@@ -18,15 +18,15 @@ describe('Validation', function() {
         assert.equal(await lib.validate(schema,apple), false);
         apple.cultivar = "Collins";
         assert.equal(await lib.validate(schema,apple), true);
+
         return;
       });
       it('Offer Schema', async () => {
         const lib = new Lib();
-        assert.throws(
-          () => {
-            lib.addOffer({});
-          },
-          Error
+        await assert.rejects(
+          async () => {
+            await lib.addOffer({});
+          }
         );
         const Offer = function() {
         return {
@@ -46,33 +46,32 @@ describe('Validation', function() {
             }
           },
           ratio:1,
+          provider:"1337",
           validUntil:new Date().getTime() + 86400000
         }
         }
-        lib.addOffer(Offer());
+        await lib.addOffer(Offer());
         let offer = Offer();
         offer.ratio = 0;
-        assert.throws(
-          () => {
-            lib.addOffer(offer);
+        await assert.rejects(
+          async () => {
+            await lib.addOffer(offer);
           },
           Error
         );
         offer = Offer();
         offer.validUntil = 0;
-        assert.throws(
-          () => {
-            lib.addOffer(offer);
-          },
-          Error
+        await assert.rejects(
+          async () => {
+            await lib.addOffer(offer);
+          }
         );
         offer = Offer();
         offer.ask.definition.schema = './lib.js';
-        assert.throws(
-          () => {
-            lib.addOffer(offer);
-          },
-          Error
+        await assert.rejects(
+          async () => {
+            await lib.addOffer(offer);
+          }
         );
         assert.equal(lib.offers.length > 0, true);
         return;

@@ -81,8 +81,13 @@
       "type": "number",
       "title": "Timestamp Binding of Offer",
       "default": "0"
+    },
+    "provider": {
+      "type": "string",
+      "title": "Identity",
+      "description": "Identity of Offer Provider"
     }
   },
-  "required": ["bid", "ask", "ratio","validUntil"],
+  "required": ["bid", "ask","validUntil","provider"],
   "description": "Meta Schema for Reference Implementation for Identity based Asset Exchange"
 }
