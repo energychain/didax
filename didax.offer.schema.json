@@ -1,0 +1,88 @@
+{
+  "$id": "https://corrently.io/schemas/didax.offer.schema.json",
+  "type": "object",
+  "properties": {
+    "bid": {
+      "type": "object",
+      "title": "Offer",
+      "description": "Element exchanged if demand given",
+      "properties": {
+        "minQuantity": {
+          "type": "number",
+          "description": "Minimum amount of bid in single transaction",
+          "default": "1",
+          "title": "Minimum Quantity of Bid"
+        },
+        "totalQuantity": {
+          "type": "number",
+          "description": "Amount offered",
+          "default": "1",
+          "title": "Quantity to offer"
+        },
+        "definition": {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "title": "URI Asset Definition ",
+              "type": "string",
+              "description": "JSON Schema  of Asset Type Definition",
+              "format": "uri-reference"
+            },
+            "asset": {
+              "type": "string",
+              "title": "URI of Asset",
+              "description": "JSON of digital twin of asset",
+              "format": "uri-reference"
+            }
+          },
+          "required": ["schema","asset"]
+        }
+      },
+      "required": ["minQuantity","totalQuantity","definition"]
+    },
+    "ask": {
+      "type": "object",
+      "title": "Demand",
+      "description": "Element requested to provide give offer.",
+      "properties": {
+        "minQuantity": {
+          "type": "number",
+          "title": "Minimum Quantity of Ask",
+          "description": "Minimum amount of Ask in single transaction",
+          "default": "1"
+        },
+        "definition": {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "type": "string",
+              "description": "JSON Schema of Asset Type Definition",
+              "title": "URI Asset Definition ",
+              "format": "uri-reference"
+            },
+            "requirement": {
+              "type": "string",
+              "title": "URI Required properties",
+              "description": "JSON Schema URI of required properties of asset.",
+              "format": "uri-reference"
+            }
+          },
+          "required": ["schema"]
+        }
+      },
+         "required": ["minQuantity","definition"]
+    },
+    "ratio": {
+      "type": "number",
+      "title": "Bid for Ask qty",
+      "default": "1"
+    },
+    "validUntil": {
+      "type": "number",
+      "title": "Timestamp Binding of Offer",
+      "default": "0"
+    }
+  },
+  "required": ["bid", "ask", "ratio","validUntil"],
+  "description": "Meta Schema for Reference Implementation for Identity based Asset Exchange"
+}
