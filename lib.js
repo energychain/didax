@@ -1,16 +1,25 @@
-module.exports = function(config) {
-    const Ajv = require("ajv")
+const EventEmitter = require('events');
 
+class Didax extends EventEmitter {
+ constructor(config) {
+    super();
+    const Ajv = require("ajv")
+    const eventEmitter = new EventEmitter();
     const addFormats = require("ajv-formats");
     const Loader = require("./refLoader.js");
+    const parent = this;
     const refLoader = new Loader(config);
 
+    refLoader.on('load',function(uri) {
+      parent.emit('refLoad',uri);
+    });
     const ajv = new Ajv({allErrors: true});
     addFormats(ajv);
     this.offers = [];
-    let parent = this;
+
 
     this.addOffer = async function(offer) {
+
       if(!await parent.validate(await refLoader.load("./didax.offer.schema.json"),offer)) {
         throw new Error('Offer Schema Validation failed');
       }
@@ -32,7 +41,8 @@ module.exports = function(config) {
       if(!await parent.validate(offer.bid.definition.schema,offer.bid.definition.asset)) {
         throw new Error('Bid Asset not Valid for Bid Schema.');
       }
-      this.offers.push(offer);
+      parent.emit('addOffer',offer);
+      if(typeof offer._discarded == 'undefined') this.offers.push(offer);
       return this.offers.length;
     }
 
@@ -53,15 +63,20 @@ module.exports = function(config) {
                   requirementMatch = await parent.validate(this.offers[j].ask.definition.requirement,this.offers[i].bid.definition.asset);
                 }
                 if(requirementMatch) {
-                  matches.push({pair:[
+                  const match = {pair:[
                     this.offers[i],
                     this.offers[j]
-                  ]});
+                  ]}
+                  parent.emit('match',match);
+                  if(typeof match._discarded == 'undefined') {
+                    matches.push(match);
+                  }
                 }
             }
           }
         }
       }
+      this.emit('matches',matches);
       return matches;
     }
 
@@ -72,4 +87,6 @@ module.exports = function(config) {
     }
 
     return this;
-}
+}}
+
+module.exports = Didax;
