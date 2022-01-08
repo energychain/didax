@@ -1,7 +1,6 @@
 module.exports = function(config) {
     const Ajv = require("ajv")
 
-    const axios = require("axios");
     const addFormats = require("ajv-formats");
     const Loader = require("./refLoader.js");
     const refLoader = new Loader(config);
@@ -22,7 +21,6 @@ module.exports = function(config) {
         throw new Error('validUntil < now()');
       }
 
-      // Implement BID and ASK Schema into offer Object
       offer.bid.definition.schema = await refLoader.load(offer.bid.definition.schema);
       offer.bid.definition.asset = await refLoader.load(offer.bid.definition.asset);
       offer.ask.definition.schema = await refLoader.load(offer.ask.definition.schema);
@@ -43,12 +41,10 @@ module.exports = function(config) {
       for(let i=0;i<this.offers.length;i++) {
         for(let j=0;j<this.offers.length;j++) {
           if(this.offers[i].bid.definition.schema["$id"] == this.offers[j].ask.definition.schema["$id"]) {
-            // Ask and Bid Schema matches
             if(
                  ((typeof this.offers[i].ratio == 'undefined') || (typeof this.offers[j].ratio == 'undefined')) ||
                  (this.offers[i].ratio == (1/this.offers[j].ratio))
                ) {
-                // price fits
                 let requirementMatch = true;
                 if(typeof this.offers[i].ask.definition.requirement !== 'undefined') {
                   requirementMatch = await parent.validate(this.offers[i].ask.definition.requirement,this.offers[j].bid.definition.asset);
