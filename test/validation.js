@@ -76,4 +76,46 @@ describe('Validation', function() {
         assert.equal(lib.offers.length > 0, true);
         return;
       });
+      it('Ask Presentation Definition Schema', async () => {
+        const lib = new Lib();
+        await assert.rejects(
+          async () => {
+            await lib.addOffer({});
+          }
+        );
+        const Offer = function() {
+        return {
+          bid: {
+              minQuantity:1,
+              totalQuantity:1,
+              definition: {
+                schema:"./test/schema.apple.json",
+                asset:"./test/test.apple.json"
+              }
+          },
+          ask: {
+            minQuantity:1,
+            definition: {
+              schema:"./test/schema.pear.json",
+              requirement:"./test/schema.apple.json"
+            },
+            presentations:[
+                "./test/test.presentation_definition.json"
+            ]
+          },
+          ratio:1,
+          provider:"1337",
+          validUntil:new Date().getTime() + 86400000
+        }
+        }
+        await lib.addOffer(Offer());
+        assert.equal(lib.offers.length > 0, true);
+        return;
+      });
+      it('Claim Schema', async () => {
+        const lib = new Lib();
+        const schema = require("../dif.presentation_submission.schema.json");
+        const test = require("./test.presentation_submission.json");
+        assert.equal(await lib.validate(schema,test), true);
+      });
 });

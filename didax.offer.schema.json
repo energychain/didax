@@ -35,6 +35,15 @@
               "format": "uri-reference"
             }
           },
+          "claims": {
+              "type": "array",
+              "items": {
+                  "type": "string",
+                  "description": "Claims presented",
+                  "title": "Presentation Submission",
+                  "format": "uri-reference"
+              }
+          },
           "required": ["schema","asset"]
         }
       },
@@ -57,7 +66,7 @@
             "schema": {
               "type": "string",
               "description": "JSON Schema of Asset Type Definition",
-              "title": "URI Asset Definition ",
+              "title": "URI Asset Definition",
               "format": "uri-reference"
             },
             "requirement": {
@@ -68,6 +77,15 @@
             }
           },
           "required": ["schema"]
+        },
+        "presentations": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "description": "Presentations required",
+                "title": "Presentation Definition",
+                "format": "uri-reference"
+            }
         }
       },
          "required": ["minQuantity","definition"]

@@ -4,6 +4,9 @@
 
 **Reference Implementation for Identity based Asset Exchange**
 
+## Notes
+Presentations Definition from [Presentation Exchange v1.0.0](https://identity.foundation/presentation-exchange/spec/v1.0.0/#json-schema-2)
+
 ## Maintainer / Imprint
 
 <addr>

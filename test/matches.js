@@ -138,4 +138,30 @@ describe('Matches', function() {
 
         return;
       });
+      it('Claim and Required Presentation', async () => {
+        const lib = new Lib();
+
+        let offerA = OfferA();
+        offerA.ratio = 2;
+        let offerB = OfferB();
+        offerB.ratio = 0.5;
+
+        offerA.ask.presentations = [];
+        offerA.ask.presentations.push("./test/test.presentation_definition.json");
+        await lib.addOffer(offerA);
+        await lib.addOffer(offerB);
+
+        assert.equal(lib.offers.length, 2); // offerB does not claim!
+        assert.equal((await lib.getMatches()).length,0);
+
+        let offerC = OfferB();
+        offerC.ratio = 0.5;
+        offerC.bid.claims = [];
+        offerC.bid.claims.push("./test/test.claim.json");
+        await lib.addOffer(offerC);
+        assert.equal(lib.offers.length, 3); // offerB does not claim!
+        assert.equal((await lib.getMatches()).length,2); // Do we want this?
+
+        return;
+      });
 });
