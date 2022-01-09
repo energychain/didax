@@ -16,7 +16,7 @@ class Didax extends EventEmitter {
     const ajv = new Ajv({allErrors: true,strict: false, allowUnionTypes: true});
     addFormats(ajv);
     this.offers = [];
-
+    this.expired = [];
 
     this.addOffer = async function(offer) {
 
@@ -57,7 +57,18 @@ class Didax extends EventEmitter {
     }
 
     this.getMatches = async function() {
-      let matches = [];
+      const matches = [];
+      const expires = [];
+      const now = new Date().getTime();
+      for(let i=0;i<this.offers.length;i++) {
+        if(this.offers[i].validUntil < now) expires.push(""+i);
+      };
+      for(let i=0;i<expires.length;i++) {
+        this.expired.push(this.offers[expires[i]*1]);
+        parent.emit('expired',this.offers[expires[i]*1]);
+        this.offers.splice(expires[i] * 1, 1);
+      }
+
       for(let i=0;i<this.offers.length;i++) {
         for(let j=0;j<this.offers.length;j++) {
           if(this.offers[i].bid.definition.schema["$id"] == this.offers[j].ask.definition.schema["$id"]) {
