@@ -19,7 +19,6 @@ class Didax extends EventEmitter {
     this.expired = [];
 
     this.addOffer = async function(offer) {
-
       if(!await parent.validate(await refLoader.load("./didax.offer.schema.json"),offer)) {
         throw new Error('Offer Schema Validation failed');
       }
