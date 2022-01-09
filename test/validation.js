@@ -46,7 +46,7 @@ describe('Validation', function() {
             }
           },
           ratio:1,
-          provider:"1337",
+          issuer:"1337",
           validUntil:new Date().getTime() + 86400000
         }
         }
@@ -104,7 +104,7 @@ describe('Validation', function() {
             ]
           },
           ratio:1,
-          provider:"1337",
+          issuer:"1337",
           validUntil:new Date().getTime() + 86400000
         }
         }

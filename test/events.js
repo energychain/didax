@@ -4,7 +4,7 @@ var assert = require('assert');
 describe('Events', function() {
   const OfferA = function() {
   return {
-    provider:"1337",
+    issuer:"1337",
     bid: {
         minQuantity:1,
         totalQuantity:1,
@@ -26,7 +26,7 @@ describe('Events', function() {
   }
   const OfferB = function() {
   return {
-    provider:"1337",
+    issuer:"1337",
     bid: {
         minQuantity:1,
         totalQuantity:1,
