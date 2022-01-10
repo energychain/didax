@@ -1,5 +1,5 @@
 {
-  "name": "didax",
+  "name": "didax-core",
   "version": "0.5.1",
   "description": "Reference Implementation for Identity based Asset Exchange",
   "main": "lib.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/energychain/didax.git"
+    "url": "git+https://github.com/energychain/didax-core.git"
   },
   "keywords": [
     "asset",
@@ -20,9 +20,9 @@
   "author": "STROMDAO GmbH <dev@stromdao.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/energychain/didax/issues"
+    "url": "https://github.com/energychain/didax-core/issues"
   },
-  "homepage": "https://github.com/energychain/didax#readme",
+  "homepage": "https://github.com/energychain/didax-core#readme",
   "devDependencies": {
     "mocha": "^9.1.3"
   },
