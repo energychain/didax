@@ -104,6 +104,11 @@
       "type": "string",
       "title": "Identity",
       "description": "Identity of Offer Provider"
+    },
+    "id": {
+      "type": "string",
+      "title": "OfferId",
+      "description": "UID of this Offer"
     }
   },
   "required": ["bid", "ask","validUntil","issuer"],
