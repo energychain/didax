@@ -8,8 +8,17 @@ class Didax extends EventEmitter {
     const addFormats = require("ajv-formats");
     const Loader = require("./refLoader.js");
     const parent = this;
+
+    if((typeof config == 'undefined')||(config == null)) {
+      config = {};
+    }
+    parent.config = config;
     const refLoader = new Loader(config);
 
+
+    if(typeof parent.config.schema_hub == 'undefined') {
+      parent.config.schema_hub = 'https://corrently.io/schemas/';
+    }
     refLoader.on('load',function(uri) {
       parent.emit('refLoad',uri);
     });
@@ -19,7 +28,7 @@ class Didax extends EventEmitter {
     this.expired = [];
 
     this.addOffer = async function(offer) {
-      if(!await parent.validate(await refLoader.load("./didax.offer.schema.json"),offer)) {
+      if(!await parent.validate(await refLoader.load(parent.config.schema_hub + "didax.offer.schema.json"),offer)) {
         throw new Error('Offer Schema Validation failed');
       }
       if(offer.ratio == 0) {
@@ -38,7 +47,7 @@ class Didax extends EventEmitter {
       }
 
       if(typeof offer.ask.presentations !== 'undefined') {
-        const pdSchema = await refLoader.load("./dif.presentation_definition.schema.json");
+        const pdSchema = await refLoader.load(parent.config.schema_hub + "dif.presentation_definition.schema.json");
         let presentationsValid = true;
         for(let i=0;i<offer.ask.presentations.length;i++) {
           offer.ask.presentations[i] = await refLoader.load(offer.ask.presentations[i]);

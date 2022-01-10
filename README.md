@@ -9,7 +9,7 @@
 
 ```
 git clone https://github.com/energychain/didax-core
-cd dida-core
+cd didax-core
 npm install --dev
 npm test
 ```

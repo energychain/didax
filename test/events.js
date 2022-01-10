@@ -54,7 +54,7 @@ describe('Events', function() {
     setTimeout(function () {
       assert(eventFired, 'Event did not fire in 1000 ms.');
       done();
-    }, 300); //timeout with an error in one second
+    }, 1000); //timeout with an error in one second
     lib.on('addOffer',function(arg){
       eventFired = true
     });
@@ -83,9 +83,7 @@ describe('Events', function() {
       done();
     }, 500); //timeout with an error in one second
     lib.on('refLoad',function(arg){
-      if(arg == './didax.offer.schema.json') {
         eventFired = true;
-      }
     });
     lib.addOffer(OfferB());
   });
